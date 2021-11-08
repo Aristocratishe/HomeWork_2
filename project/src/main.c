@@ -16,7 +16,7 @@ int main() {
     struct timespec mt1, mt2;
     long int tt;
     clock_gettime(CLOCK_REALTIME, &mt1);
-    const size_t NUMCLUSTERS = 100;
+    const size_t NUMCLUSTERS = 33;
     size_t numVectors;
     rVector *arrVec = NULL;
     char *DirName = NULL;
