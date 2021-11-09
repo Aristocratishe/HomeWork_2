@@ -31,6 +31,13 @@ static rVector *defCenters(rVector *arrVec, size_t numVectors, size_t NUMCLUSTER
                 break;
             }
         }
+        if (i > 0) {
+            for (size_t j = 0; j < i; ++j) {
+                if (cMass[j].x == cMass[i].x && cMass[j].y == cMass[i].y && cMass[j].z == cMass[i].z) {
+                    --i;
+                }
+            }
+        }
     }
     return cMass;
 }

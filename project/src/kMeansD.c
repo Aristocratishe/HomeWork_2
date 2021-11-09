@@ -133,13 +133,20 @@ static rVector *defCenters(rVector *arrVec, size_t numVectors, size_t NUMCLUSTER
         return NULL;
     }
     for (size_t i = 0; i < NUMCLUSTERS; ++i) {
-        rVector temp = arrVec[rand() % numVectors];
+        rVector temp = arrVec[0 + rand() % numVectors];
         for (size_t j = i; j < NUMCLUSTERS; ++j) {
             if (temp.x != cMass[j].x && temp.y != cMass[j].y && temp.z != cMass[j].z) {
                 cMass[j] = temp;
             } else {
                 --i;
                 break;
+            }
+        }
+        if (i > 0) {
+            for (size_t j = 0; j < i; ++j) {
+                if (cMass[j].x == cMass[i].x && cMass[j].y == cMass[i].y && cMass[j].z == cMass[i].z) {
+                    --i;
+                }
             }
         }
     }
