@@ -3,11 +3,40 @@
 //
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <iostream>
+
 extern "C" {
 #include "kMeans.h"
 }
 
-TEST(FIRST_TEST, ERROR) {
+bool operator>(const rVector &a, const rVector &b) {
+    if (a.x > b.x) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool operator<(const rVector &a, const rVector &b) {
+    if (a.x < b.x) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool operator==(const rVector &a, const rVector &b) {
+    if (a.x == b.x) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool cmp(const rVector &a, const rVector &b) { return (a.x == b.x && a.y == b.y && a.z == b.z); }
+
+TEST(ZERO_TEST, ERROR) {
     struct timespec mt1, mt2;
     long int tt;
     clock_gettime(CLOCK_REALTIME, &mt1);
@@ -22,15 +51,51 @@ TEST(FIRST_TEST, ERROR) {
     printf("Затрачено время:\n %ld нс\n", tt);
 }
 
+TEST(FIRST_TEST, BUILD_CLUSTERS_1) {
+    struct timespec mt1, mt2;
+    long int tt;
+    clock_gettime(CLOCK_REALTIME, &mt1);
+    const rVector arrVec[] = {{1, 1, 1}, {10, 10, 10}, {20, 20, 20}};
+    size_t numVectors = 3;
+    const size_t NUMCLUSTERS = 3;
+    rVector *centroids = cMassCentroids((rVector *)arrVec, numVectors, NUMCLUSTERS);
+    EXPECT_TRUE(centroids != nullptr);
+    std::sort(centroids, centroids + NUMCLUSTERS);
+    bool flag = false;
+    for (size_t i = 0; i < NUMCLUSTERS; ++i) {
+        if (cmp(arrVec[i], centroids[i])) {
+            flag = true;
+        } else {
+            flag = false;
+        }
+    }
+    EXPECT_TRUE(flag);
+    free(centroids);
+    clock_gettime(CLOCK_REALTIME, &mt2);
+    tt = 1000000000 * (mt2.tv_sec - mt1.tv_sec) + (mt2.tv_nsec - mt1.tv_nsec);
+    printf("Затрачено время:\n %ld нс\n", tt);
+}
+
 TEST(SECOND_TEST, BUILD_CLUSTERS_1) {
     struct timespec mt1, mt2;
     long int tt;
     clock_gettime(CLOCK_REALTIME, &mt1);
-    const rVector arrVec[] = {{4, 1, 3}, {8, 2, 1}, {9, 5, 10}, {3, 12, 4}, {5, 8, 1}, {16, 2, 14}};
+    const rVector arrVec[] = {{1, 1, 1},    {10, 10, 10}, {20, 20, 20},
+                              {30, 30, 30}, {40, 40, 40}, {50, 50, 50}};
     size_t numVectors = 6;
-    const size_t NUMCLUSTERS = 2;
+    const size_t NUMCLUSTERS = 6;
     rVector *centroids = cMassCentroids((rVector *)arrVec, numVectors, NUMCLUSTERS);
     EXPECT_TRUE(centroids != nullptr);
+    std::sort(centroids, centroids + NUMCLUSTERS);
+    bool flag = false;
+    for (size_t i = 0; i < NUMCLUSTERS; ++i) {
+        if (cmp(arrVec[i], centroids[i])) {
+            flag = true;
+        } else {
+            flag = false;
+        }
+    }
+    EXPECT_TRUE(flag);
     free(centroids);
     clock_gettime(CLOCK_REALTIME, &mt2);
     tt = 1000000000 * (mt2.tv_sec - mt1.tv_sec) + (mt2.tv_nsec - mt1.tv_nsec);
